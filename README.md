@@ -8,5 +8,5 @@ Quadruped Autorigging Tool:
     - **Maximize / Minimize pivot points**: This button helps us scale all the points in order to match the model's size.<br>
     - **Adjust pivot points locations**: If we would like to adjust a specific point again after scaling all the points up or down, choose this button.<br>
     - **Confirm**: We choose this button to confirm that we have finished the points' adjustments and the window closes so we can get back to our first window.<br>
-6. Now, we click on the second button in the "Quadruped Autorigger" window that is called "Finalize rigging". This button creates for us the skeleton at the same places of the pivot points adjusted by the user along with all the controllers and IK handles needed for moving the model.<br>
+6. Now, we click on the second button in the "Quadruped Autorigger" window that is called "Finalize rigging". This button creates for us the skeleton at the same places of the pivot points adjusted along with all the controllers and IK handles needed for moving the model.<br>
 7. If we try to run the animation code, we get a GUI window for manipulating the speed that has a textbox and a button called "Play / Pause". We have to enter a value in the textbox and press the button so we can see the animal walk for one cycle using the value entered in the textbox as the animation's speed.<br>
