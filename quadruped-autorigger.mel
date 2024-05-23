@@ -1,0 +1,858 @@
+global proc string[] createLocators(string $locatorName, int $numLocators, float $initPosX, float $initPosY, float $initPosZ, float $offsetX, float $offsetY, float $offsetZ) {
+  string $locators[];
+  
+  for ($i = 0; $i < $numLocators; $i++) {
+    float $posX = $initPosX + $offsetX * $i;
+    float $posY = $initPosY + $offsetY * $i;
+    float $posZ = $initPosZ + $offsetZ * $i;
+
+    string $locatorNameIndex = ($locatorName + $i);
+    string $locator[] = `spaceLocator -n $locatorNameIndex`;
+    move -r $posX $posY $posZ $locator[0];
+    
+    // Set yellow color for the locator (RGB values)
+    setAttr ($locator[0] + ".overrideEnabled") 1;
+    setAttr ($locator[0] + ".overrideColor") 17;  // Yellow color (adjust value for different colors)
+    
+    $locators[size($locators)] = $locator[0];
+  }
+  
+  return $locators;
+}
+
+global proc placeLocators() {
+    
+    // Place locators
+    global string $tailLocators[], $straightBackSpine[], $headToBack[], $leftFrontShoulder[], $leftFrontElbow[], $leftFrontAnkle[], $leftFrontPawStart[], $leftFrontToes[], $leftBackHipStart[], $leftBackHipEnd[], $leftBackKnee[], $leftBackAnkle[], $leftBackPawStart[], $leftBackToes[], $firstAbdomenLocator[], $secondAbdomenLocator[], $eyeLocator[], $headToMouthHalfWay[], $headToMouth[], $ChestLocatorHalfWay[], $ChestLocator[];
+    // Specify the object name
+string $objectName = "Mesh";
+
+// Check if the object exists
+if (`objExists $objectName`) {
+    // Get the shape node of the specified object
+    string $shapeNode[] = `listRelatives -shapes $objectName`;
+
+    // Check if the shape node exists
+    if (size($shapeNode) > 0) {
+        // Set the object display mode to wireframe
+        setAttr ($shapeNode[0] + ".overrideEnabled") 1;
+        setAttr ($shapeNode[0] + ".overrideDisplayType") 1;
+        print("The display mode of " + $objectName + " has been set to wireframe.\n");
+    } else {
+        print("No shape node found for the specified object: " + $objectName + ".\n");
+    }
+} else {
+    print("The specified object " + $objectName + " does not exist.\n");
+}
+
+    string $tailLocators[] = createLocators("tailLocator", 7, 0, 32, -18.5, 0, -3, -3.0);
+
+    // Move each locator according to the provided movement commands
+    for ($i = 0; $i < size($tailLocators); $i++) {
+    string $locator = $tailLocators[$i];
+    select -r $locator;
+    
+    // Move based on the provided movements
+    switch ($i) {
+        case 0:
+            move -r 0 -0.830719 1.910653;
+            break;
+        case 1:
+            move -r 0 1 2.1;
+            break;
+        case 2:
+            move -r 0 1.17 1.55;
+            break;
+        case 3:
+            move -r 0 0.731991 0.914988;
+            break;
+        case 4:
+            move -r 0 0.288011 0.648024;
+            break;
+        case 5:
+            move -r 0 0.366878 0.244586;
+            break;
+        case 6:
+            move -r 0 1.317951 0;
+            break;
+        default:
+            break;
+    }
+}
+
+    string $straightBackSpine[] = createLocators("straightBackSpine", 6, 0, 34, 8, 0, -0.33, -4.41);
+    string $headToBack[] = createLocators("headToBack", 4, 0, 43.9, 18.5, 0, -2.5, -2.5);
+    string $leftFrontShoulder[] = createLocators("leftFrontShoulder", 1, 7, 24.3, 11, 0, 0, 0);
+    string $leftFrontElbow[] = createLocators("leftFrontElbow", 1, 7, 15.3, 9, 0, 0, 0);
+    string $leftFrontAnkle[] = createLocators("leftFrontAnkle", 1, 7, 6.3, 10.4, 0, 0, 0);
+    string $leftFrontPawStart[] = createLocators("leftFrontPawStart", 1, 7, 1.3, 12.7, 0, 0, 0);
+    string $leftFrontToes[] = createLocators("leftFrontToes", 1, 7, 1.3, 16.7, 0, 0, 0);
+    string $leftBackHipStart[] = createLocators("leftBackHipStart", 1, 2.7, 30.5, -13, 0, 0, 0);
+    string $leftBackHipEnd[] = createLocators("leftBackHipEnd", 1, 8.5, 23.5, -7.9, 0, 0, 0);
+    string $leftBackKnee[] = createLocators("leftBackKnee", 1, 8.5, 16.5, -6.4, 0, 0, 0);
+    string $leftBackAnkle[] = createLocators("leftBackAnkle", 1, 8.5, 8, -15.4, 0, 0, 0);
+    string $leftBackPawStart[] = createLocators("leftBackPawStart", 1, 8.5, 1, -12.4, 0, 0, 0);
+    string $leftBackToes[] = createLocators("leftBackToes", 1, 8.5, 1, -8.4, 0, 0, 0);
+    string $firstAbdomenLocator[] = createLocators("firstAbdomenLocator", 1, 0, 15, 4, 0, 0, 0);
+    string $secondAbdomenLocator[] = createLocators("secondAbdomenLocator", 1, 0, 15.65, -3.4, 0, 0, 0);
+    string $eyeLocator[] = createLocators("eyeLocator", 1, 0, 37.9, 24.58, 0, 0, 0);
+    string $headToMouthHalfWay[] = createLocators("headToMouthHalfWay", 1, 0, 34.85, 20.5, 0, 0, 0);
+    string $headToMouth[] = createLocators("headToMouth", 1, 0, 32.72, 24.63, 0, 0, 0);
+    string $ChestLocatorHalfWay[] = createLocators("ChestLocatorHalfWay", 1, 0, 26.4, 16.1, 0, 0, 0);
+    string $ChestLocator[] = createLocators("ChestLocator", 1, 0, 21, 17, 0, 0, 0);
+        
+   // select move tool
+    setToolTo moveSuperContext;
+    
+    confirmDialog -title "Adjustment Reminder"
+              -message "You can now adjust the pivot points's locations but make sure to:\n\1. View the model from the right side for only adjusting the right legs.\n\2. Ensure pivot points are inside the mesh by checking from the front and back views too.\n\3. Avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area."
+              -button "Ok"
+              -defaultButton "Got it"
+              -icon "information";
+
+}
+
+global proc createJoints(string $locatorArray[]) {
+    // Loop through each locator, select it, create a joint at its position, and parent it
+    for ($i = 0; $i < size($locatorArray); $i++) {
+        string $locator = $locatorArray[$i];
+        
+        // Extract the prefix from the locator name
+        string $prefix = `match "[a-zA-Z]+" $locator`;
+
+        string $jointName = ($prefix + "Joint") + $i; // Naming the joints with extracted prefix
+        float $position[] = `xform -q -ws -t $locator`; // Get world space position of the locator
+        
+        // Try to create the joint and catch any warning
+        catch(`joint -p $position[0] $position[1] $position[2] -n $jointName`);
+    }
+}
+
+global proc string[] reverseArray(string $inputArray[]) {
+    // Get the length of the input array
+    int $arrayLength = size($inputArray);
+    
+    // Create an empty array to store the reversed elements
+    string $reversedArray[];
+    
+    // Loop through the input array in reverse order
+    for ($i = $arrayLength - 1; $i >= 0; $i--) {
+        // Append each element to the reversed array
+        $reversedArray[size($reversedArray)] = $inputArray[$i];
+    }
+    
+    // Return the reversed array
+    return $reversedArray;
+}
+
+global proc quadRig(string $headToBack[], string $straightBackSpine[], string $tailLocators[], string $leftFrontLegLocators[], string $leftBackLegLocators[], string $secondAbdomenLocator[], string $firstAbdomenLocator[], string $ChestLocatorHalfWay[], string $ChestLocator[], string $headToMouthHalfWay[], string $headToMouth[], string $eyeLocator[]) {
+    // Deselect everything
+    select -cl;
+    // Call createJoints for each array
+    createJoints($tailLocators);
+    select -cl;
+    createJoints(reverseArray($straightBackSpine));
+    select -r tailLocatorJoint0;
+    parent tailLocatorJoint0 straightBackSpineJoint0;
+    select -r straightBackSpineJoint5;
+    createJoints(reverseArray($headToBack));
+    
+    // Select straightBackSpineJoint5 and create joints for leftFrontLegLocators
+    select -r straightBackSpineJoint5 ;
+    createJoints($leftFrontLegLocators);
+
+    // Select straightBackSpineJoint0 and create joints for leftBackLegLocators
+    select -r straightBackSpineJoint0;
+    createJoints($leftBackLegLocators);
+
+    // Select leftFrontShoulderJoint0 and mirror joints for left to right
+    select -r leftFrontShoulderJoint0;
+    mirrorJoint -mirrorYZ -mirrorBehavior -searchReplace "left" "right";
+
+    // Select leftBackHipStartJoint0 and mirror joints for left to right
+    select -r leftBackHipStartJoint0;
+    mirrorJoint -mirrorYZ -mirrorBehavior -searchReplace "left" "right";
+
+    // Select straightBackSpineJoint3 and create joints for secondAbdomenLocator
+    select -r straightBackSpineJoint2;
+    createJoints($secondAbdomenLocator);
+
+    // Select straightBackSpineJoint1 and create joints for firstAbdomenLocator
+    select -r straightBackSpineJoint4;
+    createJoints($firstAbdomenLocator);
+
+    // Select headToBackJoint3 and create joints for ChestLocatorHalfWay and ChestLocator
+    select -r headToBackJoint0;
+    createJoints($ChestLocatorHalfWay);
+    createJoints($ChestLocator);
+
+    // Select headToBackJoint2 and create joints for headToMouthHalfWay and headToMouth
+    select -r headToBackJoint1;
+    createJoints($headToMouthHalfWay);
+    createJoints($headToMouth);
+
+    // Select headToBackJoint1 and create joints for eyeLocator
+    select -r headToBackJoint2;
+    createJoints($eyeLocator);
+
+    bindSkin -toSkeleton "Mesh" straightBackSpineJoint0;
+    createIKHandles();
+    createAnkleControllers();
+    createPawControllers();
+    assignMaterialToControllers("controllersMaterial", $controllers, 0.8);
+    createSplineIK("straightBackSpineJoint5", "straightBackSpineJoint0", "spineIKSpline", "spineCurve");
+   
+    // Specify the object name
+string $objectName = "Mesh";
+
+// Check if the object exists
+if (`objExists $objectName`) {
+    // Get the shape node of the specified object
+    string $shapeNode[] = `listRelatives -shapes $objectName`;
+
+    // Check if the shape node exists
+    if (size($shapeNode) > 0) {
+        // Reset the object display mode to default
+        setAttr ($shapeNode[0] + ".overrideEnabled") 0;
+        setAttr ($shapeNode[0] + ".overrideDisplayType") 0;
+        print("The display mode of " + $objectName + " has been reset to default.\n");
+    } else {
+        print("No shape node found for the specified object: " + $objectName + ".\n");
+    }
+} else {
+    print("The specified object " + $objectName + " does not exist.\n");
+}
+
+   // Delete the group named "mainLocatorGroup" if it exists
+    if (`objExists mainLocatorGroup`) {
+        delete mainLocatorGroup;
+    }
+}
+
+global proc groupAndParent(string $tailLocators[], string $straightBackSpine[], string $headToBack[], string $leftFrontShoulder[], string $leftFrontElbow[], string $leftFrontAnkle[], string $leftFrontPawStart[], string $leftFrontToes[], string $leftBackHipStart[], string $leftBackHipEnd[], string $leftBackKnee[], string $leftBackAnkle[], string $leftBackPawStart[], string $leftBackToes[], string $firstAbdomenLocator[], string $secondAbdomenLocator[], string $eyeLocator[], string $headToMouthHalfWay[], string $headToMouth[], string $ChestLocatorHalfWay[], string $ChestLocator[]) {
+   global string $leftBackLegLocators[], $leftFrontLegLocators[];
+   // Deselect everything
+    select -cl;
+    // Grouping and Parenting for all locators
+    string $mainLocatorGroup = `group -em -n "mainLocatorGroup"`;
+
+    // Grouping and parenting head to beginning of the spine locators
+    parent $headToBack[0] $mainLocatorGroup;
+    for ($i = size($headToBack) - 1; $i > 0; $i--) {
+        parent $headToBack[$i] $headToBack[$i-1];
+    }
+
+    // Grouping and parenting spine locators
+    parent $straightBackSpine[0] $headToBack[3];
+    for ($i = size($straightBackSpine) - 1; $i > 0; $i--) {
+        parent $straightBackSpine[$i] $straightBackSpine[$i-1];
+    }
+
+    // Grouping and parenting tail locators
+    parent $tailLocators[0] $straightBackSpine[5];
+    for ($i = size($tailLocators) - 1; $i > 0; $i--) {
+        parent $tailLocators[$i] $tailLocators[$i-1];
+    }
+
+    // Grouping and parenting left front leg locators
+    string $leftFrontLegLocators[] = {$leftFrontShoulder[0], $leftFrontElbow[0], $leftFrontAnkle[0], $leftFrontPawStart[0], $leftFrontToes[0]};
+    parent $leftFrontLegLocators[0] $straightBackSpine[1];
+    for ($i = size($leftFrontLegLocators) - 1; $i > 0; $i--) {
+        parent $leftFrontLegLocators[$i] $leftFrontLegLocators[$i-1];
+    }
+
+    // Grouping and parenting left back leg locators
+    string $leftBackLegLocators[] = {$leftBackHipStart[0], $leftBackHipEnd[0], $leftBackKnee[0], $leftBackAnkle[0], $leftBackPawStart[0], $leftBackToes[0]};
+    parent $leftBackLegLocators[0] $straightBackSpine[5];
+    for ($i = size($leftBackLegLocators) - 1; $i > 0; $i--) {
+        parent $leftBackLegLocators[$i] $leftBackLegLocators[$i-1];
+    }
+
+    // Parenting the abdomen to spine
+    parent $firstAbdomenLocator[0] $straightBackSpine[1];
+    parent $secondAbdomenLocator[0] $straightBackSpine[4];
+
+    // Parenting the eye to the head
+    parent $eyeLocator[0] $headToBack[1];
+
+    // Parenting Head to mouth Locators
+    parent $headToMouthHalfWay[0] $headToBack[2];
+    parent $headToMouth[0] $headToMouthHalfWay[0];
+
+    // Parenting Chest Locators
+    parent $ChestLocatorHalfWay[0] $headToBack[3];
+    parent $ChestLocator[0] $ChestLocatorHalfWay[0];
+}
+
+global proc ungroupAndUnparent(string $tailLocators[], string $straightBackSpine[], string $headToBack[], string $leftFrontShoulder[], string $leftFrontElbow[], string $leftFrontAnkle[], string $leftFrontPawStart[], string $leftFrontToes[], string $leftBackHipStart[], string $leftBackHipEnd[], string $leftBackKnee[], string $leftBackAnkle[], string $leftBackPawStart[], string $leftBackToes[], string $firstAbdomenLocator[], string $secondAbdomenLocator[], string $eyeLocator[], string $headToMouthHalfWay[], string $headToMouth[], string $ChestLocatorHalfWay[], string $ChestLocator[], string $leftBackLegLocators[], string $leftFrontLegLocators[]) {  
+    parent -w $headToBack[0];
+    for ($i = 1; $i < size($headToBack); $i++) {
+         parent -w $headToBack[$i];
+        }
+   
+    // Unparent the abdomen locators
+    parent -w $firstAbdomenLocator[0];
+    parent -w $secondAbdomenLocator[0];
+
+    // Unparent the eye locator
+    parent -w $eyeLocator[0];
+
+    // Unparent the head to mouth locators
+    parent -w $headToMouthHalfWay[0];
+    parent -w $headToMouth[0];
+
+    // Unparent the chest locators
+    parent -w $ChestLocatorHalfWay[0];
+    parent -w $ChestLocator[0];
+
+    // Unparent the tail locators
+    for ($i = 0; $i < size($tailLocators); $i++) {
+        parent -w $tailLocators[$i];
+    }
+
+    // Unparent the spine locators
+    for ($i = 0; $i < size($straightBackSpine); $i++) {
+        parent -w $straightBackSpine[$i];
+    }
+
+    // Unparent the left front leg locators
+    for ($i = 0; $i < size($leftFrontLegLocators); $i++) {
+        parent -w $leftFrontLegLocators[$i];
+    }
+
+    // Unparent the left back leg locators
+    for ($i = 0; $i < size($leftBackLegLocators); $i++) {
+        parent -w $leftBackLegLocators[$i];
+    }
+
+    // Delete the main locator group
+    delete "mainLocatorGroup";
+    setToolTo moveSuperContext;
+    confirmDialog -title "Adjustment Reminder"
+              -message "You can now adjust the pivot points's locations but make sure to:\n\1. View the model from the right side for only adjusting the right legs.\n\2. Ensure pivot points are inside the mesh by checking from the front and back views too.\n\3. Avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area."
+              -button "Ok"
+              -defaultButton "Got it"
+              -icon "information";
+}
+
+
+global proc scaleLocators(){
+global string $tailLocators[];
+global string $straightBackSpine[];
+global string $headToBack[];
+global string $leftFrontShoulder[];
+global string $leftFrontElbow[];
+global string $leftFrontAnkle[];
+global string $leftFrontPawStart[];
+global string $leftFrontToes[];
+global string $leftBackHipStart[];
+global string $leftBackHipEnd[];
+global string $leftBackKnee[];
+global string $leftBackAnkle[];
+global string $leftBackPawStart[];
+global string $leftBackToes[];
+global string $firstAbdomenLocator[];
+global string $secondAbdomenLocator[];
+global string $eyeLocator[];
+global string $headToMouthHalfWay[];
+global string $headToMouth[];
+global string $ChestLocatorHalfWay[];
+global string $ChestLocator[];
+
+    groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator);
+    select -r mainLocatorGroup;
+    setToolTo scaleSuperContext;
+}
+
+global proc createIKRotatePlaneHandle(string $startHierarchy, string $endHierarchy, string $ikName) {
+    // Create IK handle between start and end hierarchies
+    string $ikHandle[] = `ikHandle -sj $startHierarchy -ee $endHierarchy -solver "ikRPsolver"`;
+    rename $ikHandle[0] $ikName;
+}
+
+global proc createIKSingleChainHandle(string $startHierarchy, string $endHierarchy, string $ikName) {
+    // Create IK handle between start and end hierarchies using single chain solver
+    string $ikHandle[] = `ikHandle -sj $startHierarchy -ee $endHierarchy -solver "ikSCsolver"`;
+    rename $ikHandle[0] $ikName;
+}
+
+global proc createIKHandles(){
+    
+//left front leg
+createIKRotatePlaneHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0","straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0|leftFrontElbowJoint1|leftFrontAnkleJoint2|leftFrontPawStartJoint3" ,"leftFrontShoulderToPaw" );
+createIKSingleChainHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0|leftFrontElbowJoint1|leftFrontAnkleJoint2","straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0|leftFrontElbowJoint1|leftFrontAnkleJoint2|leftFrontPawStartJoint3","leftFrontAnkleToPaw");
+createIKSingleChainHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0|leftFrontElbowJoint1|leftFrontAnkleJoint2|leftFrontPawStartJoint3","straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|leftFrontShoulderJoint0|leftFrontElbowJoint1|leftFrontAnkleJoint2|leftFrontPawStartJoint3|leftFrontToesJoint4","leftFrontPawToToes");
+
+//right front leg
+createIKRotatePlaneHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0", "straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0|rightFrontElbowJoint1|rightFrontAnkleJoint2|rightFrontPawStartJoint3", "rightFrontShoulderToPaw");
+createIKSingleChainHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0|rightFrontElbowJoint1|rightFrontAnkleJoint2", "straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0|rightFrontElbowJoint1|rightFrontAnkleJoint2|rightFrontPawStartJoint3", "rightFrontAnkleToPaw");
+createIKSingleChainHandle("straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0|rightFrontElbowJoint1|rightFrontAnkleJoint2|rightFrontPawStartJoint3", "straightBackSpineJoint0|straightBackSpineJoint1|straightBackSpineJoint2|straightBackSpineJoint3|straightBackSpineJoint4|straightBackSpineJoint5|rightFrontShoulderJoint0|rightFrontElbowJoint1|rightFrontAnkleJoint2|rightFrontPawStartJoint3|rightFrontToesJoint4", "rightFrontPawToToes");
+
+//left back leg
+createIKSingleChainHandle("straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1|leftBackKneeJoint2|leftBackAnkleJoint3", "straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1|leftBackKneeJoint2|leftBackAnkleJoint3|leftBackPawStartJoint4", "leftBackAnkleToPaw");
+createIKRotatePlaneHandle("straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1", "straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1|leftBackKneeJoint2|leftBackAnkleJoint3", "leftBackHipToAnkle");
+createIKSingleChainHandle("straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1|leftBackKneeJoint2|leftBackAnkleJoint3|leftBackPawStartJoint4", "straightBackSpineJoint0|leftBackHipStartJoint0|leftBackHipEndJoint1|leftBackKneeJoint2|leftBackAnkleJoint3|leftBackPawStartJoint4|leftBackToesJoint5", "leftBackPawToToes");
+
+//right back leg
+createIKSingleChainHandle("straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1|rightBackKneeJoint2|rightBackAnkleJoint3","straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1|rightBackKneeJoint2|rightBackAnkleJoint3|rightBackPawStartJoint4", "rightBackAnkleToPaw");
+createIKRotatePlaneHandle("straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1","straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1|rightBackKneeJoint2|rightBackAnkleJoint3","rightBackHipToAnkle");
+createIKSingleChainHandle("straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1|rightBackKneeJoint2|rightBackAnkleJoint3|rightBackPawStartJoint4","straightBackSpineJoint0|rightBackHipStartJoint0|rightBackHipEndJoint1|rightBackKneeJoint2|rightBackAnkleJoint3|rightBackPawStartJoint4|rightBackToesJoint5","rightBackPawToToes");
+
+}
+
+global proc createSplineIK(string $startJoint, string $endJoint, string $ikName, string $curveName) {
+    // Select the joints
+    select -r $startJoint;
+    select -add $endJoint;
+    
+    // Create IK handle
+    string $ikHandle[] = `ikHandle -sol ikSplineSolver -pcv false -ns 3`;
+    
+    // Rename the IK handle
+    rename $ikHandle[0] $ikName;
+    
+    // Get the name of the curve from the IK handle result
+    string $curve = $ikHandle[2];
+    
+    // Rename the curve
+    rename $curve $curveName;
+}
+
+global proc snapCubeToJoint(string $jointName, string $cubeName, float $cubeSize[]) {
+    // Create a polycube
+    string $cube[] = `polyCube -w $cubeSize[0] -h $cubeSize[1] -d $cubeSize[2]`;
+    
+    // Rename the cube
+    rename $cube[0] $cubeName;
+    
+    // Get the position of the joint
+    float $jointPosition[] = `xform -q -ws -t $jointName`;
+    
+    // Move the cube to the joint
+    move $jointPosition[0] $jointPosition[1] $jointPosition[2] $cubeName;
+}
+
+global proc snapCircleToJoint(string $jointName, string $circleName, float $radius, float $rotation[]) {
+    // Create a nubs circle
+    string $circle[] = `circle -nr 0 1 0 -r $radius`;
+    
+    // Rename the circle
+    rename $circle[0] $circleName;
+    
+    // Set rotation of the circle
+    rotate -r -os $rotation[0] $rotation[1] $rotation[2] $circleName;
+    
+    // Get the position of the joint
+    float $jointPosition[] = `xform -q -ws -t $jointName`;
+    
+    // Move the circle to the joint
+    move $jointPosition[0] $jointPosition[1] $jointPosition[2] $circleName;
+}
+
+global proc createPawControllers(){
+    // Left front paw controller
+    snapCubeToJoint("leftFrontPawStartJoint3", "leftFrontPawCont", {1.0,1.0,1.0});
+    
+    // Get the position of the toes joint
+    float $toesPositionZ = `getAttr ("leftFrontToesJoint4.translateZ")`;
+    
+    // Move the selected face to the position of the toes joint
+    select "leftFrontPawCont.f[0]";
+    move -r 0 0 $toesPositionZ;
+    
+    // Select faces for scaling
+    select -add leftFrontPawCont.f[4:5];
+    
+    // Get the bounding box of the selection for scaling
+    float $firstTwoFacesPivots[] = `xform -q -ws -bb`;
+    float $firstTwoPivotX_left = ($firstTwoFacesPivots[0] + $firstTwoFacesPivots[3]) / 2.0;
+    float $firstTwoPivotY_left = ($firstTwoFacesPivots[1] + $firstTwoFacesPivots[4]) / 2.0;
+    float $firstTwoPivotZ_left = ($firstTwoFacesPivots[2] + $firstTwoFacesPivots[5]) / 2.0;    
+    float $scaleFirstTwo[] = {$toesPositionZ + 1.5, 1, 1};
+    scale -r -p $firstTwoPivotX_left $firstTwoPivotY_left $firstTwoPivotZ_left $scaleFirstTwo[0] $scaleFirstTwo[1] $scaleFirstTwo[2];
+    
+    // Select the second pair of faces for scaling
+    select leftFrontPawCont.f[1] leftFrontPawCont.f[3];
+    
+    // Get the bounding box of the second pair of faces
+    float $secondTwoFacesPivots[] = `xform -q -ws -bb`;
+    float $secondTwoPivotX_left = ($secondTwoFacesPivots[0] + $secondTwoFacesPivots[3]) / 2.0;
+    float $secondTwoPivotY_left = ($secondTwoFacesPivots[1] + $secondTwoFacesPivots[4]) / 2.0;
+    float $secondTwoPivotZ_left = ($secondTwoFacesPivots[2] + $secondTwoFacesPivots[5]) / 2.0;
+    float $scaleSecondTwo[] = {1.0, $toesPositionZ - 2, 1.0};
+    scale -r -p $secondTwoPivotX_left $secondTwoPivotY_left $secondTwoPivotZ_left $scaleSecondTwo[0] $scaleSecondTwo[1] $scaleSecondTwo[2];
+    
+    // Parent the controller with the IK handles
+    select -add leftFrontShoulderToPaw ;
+    select -add leftFrontAnkleToPaw ;
+    select -add leftFrontPawToToes ;
+    parent leftFrontShoulderToPaw leftFrontPawCont ;
+    parent leftFrontAnkleToPaw leftFrontPawCont ;
+    parent leftFrontPawToToes leftFrontPawCont ;
+    
+    // Right front paw controller
+    snapCubeToJoint("rightFrontPawStartJoint3", "rightFrontPawCont", {1.0,1.0,1.0});
+    
+    // Move the selected face to the position of the toes joint
+    select "rightFrontPawCont.f[0]";
+    move -r 0 0 $toesPositionZ;
+    
+    // Select faces for scaling
+    select -add rightFrontPawCont.f[4:5];
+    
+    // Get the bounding box of the selection for scaling
+    float $firstTwoFacesPivots_right[] = `xform -q -ws -bb`;
+    float $firstTwoPivotX_right = ($firstTwoFacesPivots_right[0] + $firstTwoFacesPivots_right[3]) / 2.0;
+    float $firstTwoPivotY_right = ($firstTwoFacesPivots_right[1] + $firstTwoFacesPivots_right[4]) / 2.0;
+    float $firstTwoPivotZ_right = ($firstTwoFacesPivots_right[2] + $firstTwoFacesPivots_right[5]) / 2.0;    
+    scale -r -p $firstTwoPivotX_right $firstTwoPivotY_right $firstTwoPivotZ_right $scaleFirstTwo[0] $scaleFirstTwo[1] $scaleFirstTwo[2];
+    
+    // Select the second pair of faces for scaling
+    select rightFrontPawCont.f[1] rightFrontPawCont.f[3];
+    
+    // Get the bounding box of the second pair of faces
+    float $secondTwoFacesPivots_right[] = `xform -q -ws -bb`;
+    float $secondTwoPivotX_right = ($secondTwoFacesPivots_right[0] + $secondTwoFacesPivots_right[3]) / 2.0;
+    float $secondTwoPivotY_right = ($secondTwoFacesPivots_right[1] + $secondTwoFacesPivots_right[4]) / 2.0;
+    float $secondTwoPivotZ_right = ($secondTwoFacesPivots_right[2] + $secondTwoFacesPivots_right[5]) / 2.0;
+    
+    // Apply the scaling
+    scale -r -p $secondTwoPivotX_right $secondTwoPivotY_right $secondTwoPivotZ_right $scaleSecondTwo[0] $scaleSecondTwo[1] $scaleSecondTwo[2];
+    
+    // Parent the controller with the IK handles
+    select -add rightFrontShoulderToPaw ;
+    select -add rightFrontAnkleToPaw ;
+    select -add rightFrontPawToToes ;
+    parent rightFrontShoulderToPaw rightFrontPawCont ;
+    parent rightFrontAnkleToPaw rightFrontPawCont ;
+    parent rightFrontPawToToes rightFrontPawCont ;
+    
+    //left back paw controller
+    snapCircleToJoint("leftBackPawStartJoint4", "leftBackPawRotation", $toesPositionZ+2, {0, 0, 90});
+    parent leftBackHipToAnkle leftBackPawRotation ;
+    parent leftBackPawRotation leftBackAnkleCont ;
+
+    // right back paw controller
+    snapCircleToJoint("rightBackPawStartJoint4", "rightBackPawRotation", $toesPositionZ+2, {0, 0, 90});
+    parent rightBackHipToAnkle rightBackPawRotation ;
+    parent rightBackPawRotation rightBackAnkleCont ;
+
+    select -r leftFrontPawContShape.f[4] ;
+    move -r 2 0 0 ;
+    select -r rightFrontPawContShape.f[5] ;
+    move -r -2 0 0 ;
+    select -r rightFrontPawContShape.f[2] ;
+    move -r 0 0 -2 ;
+    select -r leftFrontPawContShape.f[2] ;
+    move -r 0 0 -2 ;
+    select -r rightFrontPawContShape.f[3] ;
+    move -r 0 -0.5 0 ;
+    select -r leftFrontPawContShape.f[3] ;
+    move -r 0 -0.5 0 ;
+}
+   
+global proc createAnkleControllers() {
+    // Right ankle controller
+    // Create cube controller and snap it to the right ankle joint
+    snapCubeToJoint("rightBackAnkleJoint3", "rightBackAnkleCont", {1.0, 1.0, 1.0});
+    
+    // Get the position of the toes joint
+    float $toesPositionZ = `getAttr ("leftFrontToesJoint4.translateZ")`;
+    
+    // Select the fourth and fifth faces of the cube controller and scale in X-axis
+    select "rightBackAnkleCont.f[4:5]";
+    
+    // Get the bounding box of the selection
+    float $rightPivots[] = `xform -q -ws -bb`;
+    
+    // Calculate the center of the bounding box
+    float $rightPivotX = ($rightPivots[0] + $rightPivots[3]) / 2.0;
+    float $rightPivotY = ($rightPivots[1] + $rightPivots[4]) / 2.0;
+    float $rightPivotZ = ($rightPivots[2] + $rightPivots[5]) / 2.0;
+    
+    // Apply the scaling in X-axis
+    scale -r -p $rightPivotX $rightPivotY $rightPivotZ 1 1 ($toesPositionZ + 2);
+    
+    // Select face number 1 and face number 3 and scale them in the Y axis
+    select "rightBackAnkleCont.f[1]" "rightBackAnkleCont.f[3]";
+    
+    // Apply the scaling in Y-axis
+    scale -r -p $rightPivotX $rightPivotY $rightPivotZ 1 ($toesPositionZ - 2) 1;
+    
+    // Select face number 0 and face number 2 and scale them in the Z axis
+    select "rightBackAnkleCont.f[0]" "rightBackAnkleCont.f[2]";
+    
+    // Apply the scaling in Z-axis
+    scale -r -p $rightPivotX $rightPivotY $rightPivotZ ($toesPositionZ + 5) 1 1;
+
+    // Left ankle controller
+    // Create cube controller and snap it to the left ankle joint
+    snapCubeToJoint("leftBackAnkleJoint3", "leftBackAnkleCont", {1.0, 1.0, 1.0});
+    
+    // Select the fourth and fifth faces of the cube controller and scale in X-axis
+    select "leftBackAnkleCont.f[4:5]";
+    
+    // Get the bounding box of the selection
+    float $leftPivots[] = `xform -q -ws -bb`;
+    
+    // Calculate the center of the bounding box
+    float $leftPivotX = ($leftPivots[0] + $leftPivots[3]) / 2.0;
+    float $leftPivotY = ($leftPivots[1] + $leftPivots[4]) / 2.0;
+    float $leftPivotZ = ($leftPivots[2] + $leftPivots[5]) / 2.0;
+    
+    // Apply the scaling in X-axis
+    scale -r -p $leftPivotX $leftPivotY $leftPivotZ 1 1 ($toesPositionZ + 2);
+    
+    // Select face number 1 and face number 3 and scale them in the Y axis
+    select "leftBackAnkleCont.f[1]" "leftBackAnkleCont.f[3]";
+    
+    // Apply the scaling in Y-axis
+    scale -r -p $leftPivotX $leftPivotY $leftPivotZ 1 ($toesPositionZ - 2) 1;
+    
+    // Select face number 0 and face number 2 and scale them in the Z axis
+    select "leftBackAnkleCont.f[0]" "leftBackAnkleCont.f[2]";
+    
+    // Apply the scaling in Z-axis
+    scale -r -p $leftPivotX $leftPivotY $leftPivotZ ($toesPositionZ + 5) 1 1;
+    
+    // Parent controllers with joints
+    select -r leftBackAnkleToPaw leftBackHipToAnkle leftBackPawToToes ;
+    parent leftBackAnkleToPaw leftBackAnkleCont ;
+    parent leftBackHipToAnkle leftBackAnkleCont ;
+    parent leftBackPawToToes leftBackAnkleCont ;
+    
+    select -r rightBackAnkleToPaw rightBackHipToAnkle rightBackPawToToes ;
+    parent rightBackAnkleToPaw rightBackAnkleCont ;
+    parent rightBackHipToAnkle rightBackAnkleCont ;
+    parent rightBackPawToToes rightBackAnkleCont ;
+}
+
+global proc assignMaterialToControllers(string $materialName, string $controllerNames[], float $transparency) {
+    // Find the shape nodes of each controller and store them in an array
+    string $controllerShapes[];
+    for ($controller in $controllerNames) {
+        string $shapes[] = `listRelatives -shapes $controller`;
+        $controllerShapes = stringArrayCatenate($controllerShapes, $shapes);
+    }
+
+    // Create a Lambert material named "controllersMaterial" with cyan color
+    string $lambertMat = `shadingNode -asShader lambert -name $materialName`;
+    setAttr ($lambertMat + ".color") -type "double3" 0 1 1;
+
+    // Create a shading group for the material
+    string $lambertSG = `sets -renderable true -noSurfaceShader true -empty -name ($materialName + "SG")`;
+
+    // Connect the material to the shading group
+    connectAttr -f ($lambertMat + ".outColor") ($lambertSG + ".surfaceShader");
+
+    // Set transparency of the material
+    setAttr ($lambertMat + ".transparency") -type "double3" 0 0 0;
+    setAttr ($lambertMat + ".transparency") -type "double3" $transparency $transparency $transparency;
+
+    // Assign the shading group to each controller's shape
+    for ($shape in $controllerShapes) {
+        sets -e -forceElement $lambertSG $shape;
+    }
+}
+
+global proc createWalkCycle() {
+    playbackOptions -min 0 -max 200;
+    currentTime 0;
+    string $objects[] = {"Mesh", "tailLocatorJoint0", "rightBackAnkleCont", "leftBackAnkleCont", "rightFrontPawCont", "leftFrontPawCont", "spineCurve", "straightBackSpineJoint0", "straightBackSpineJoint4", "straightBackSpineJoint5"};
+    
+    //first keyframe
+    for ($obj in $objects) {
+        setKeyframe -t 0 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0 $obj;
+    }
+    
+    //second keyframe
+    currentTime 34;
+    select -r leftFrontPawCont;
+    move -r 0 0.83439 5.423538;
+    rotate -r -ws -fo 17.322033 0 0;
+
+    select -r leftBackAnkleCont;
+    move -r 0 0.554305 4.434442;
+
+    select -r rightBackAnkleCont;
+    move -r 0 0 1.52895;
+
+    select -r spineCurve;
+    move -r 0 0.106475 1.17122;
+    select -r $objects;
+    setKeyframe -t 34 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
+
+    // third keyframe
+    currentTime 67;
+    select -r leftFrontPawCont;
+    move -r 0 1.051255 3.942208;
+    rotate -r -ws -fo -5.29893 0 0;
+
+    select -r leftBackAnkleCont;
+    move -r 0 -0.363974 4.125033;
+
+    select -r rightFrontPawCont;
+    move -r 0 0.358633 2.869061;
+
+    select -r rightBackAnkleCont;
+    move -r 0 0.42926 1.502411;
+
+    select -r spineCurve;
+    move -r 0 0 1.092612;
+
+    select -r straightBackSpineJoint4;
+    move -r 0 0 0.471129;
+    select -r $objects;
+    setKeyframe -t 67 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
+
+    // fourth keyframe
+    currentTime 100;
+    select -r leftFrontPawCont;
+    move -r 0 -0.860254 0.245787;
+    rotate -r -ws -fo -12.485581 0 0;
+
+    select -r leftBackAnkleCont;
+    move -r 0 -0.367667 0.612779;
+
+    select -r rightFrontPawCont;
+    move -r 0 3.338602 -1.460638;
+    rotate -r -ws -fo 23.012346 0 0;
+
+    select -r rightBackAnkleCont;
+    move -r 0 0.445734 0.594312;
+    
+    select -r straightBackSpineJoint5 ;
+    move -r 0 0 0.388401 ;
+    select -r straightBackSpineJoint4 ;
+    move -r 0 0 0.873903 ;
+
+    select -r $objects;
+
+    setKeyframe -t 100 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
+
+    // fifth keyframe
+    currentTime 134;
+    select -r rightFrontPawCont;
+    move -r 0 -0.182263 4.374321;
+
+    select -r rightBackAnkleCont;
+    move -r 0 0 1.826428;
+    move -r 0 1.055434 2.398714 ;
+
+    select -r spineCurve;
+    move -r 0 0 0.686567;
+
+    select -r $objects;
+    setKeyframe -t 134 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
+
+    // sixth keyframe
+    currentTime 167;
+
+    select -r rightFrontPawCont;
+    move -r 0 -2.408556 3.318456;
+    rotate -r -ws -fo -20.139853 0 0;
+
+    select -r rightBackAnkleCont;
+    move -r 0 -1.528843 5.198065;
+    move -r 0 -0.702429 0 ;
+
+    select -r spineCurve;
+    move -r 0 0 5.507621;
+    
+    select -r straightBackSpineJoint5 ;
+    move -r 0 0 -0.388401 ;
+    select -r straightBackSpineJoint4 ;
+    move -r 0 0 -0.873903 ;
+
+    select -r $objects;
+
+    setKeyframe -t 167 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
+    select -cl;
+
+}
+
+global proc animationPlaySpeed() 
+{
+    float $speed = `textField -query -tx speedTextField`; 
+  
+    // Check if the entered speed is positive
+    if ($speed <= 0)
+    {
+        // Display a message in the UI informing the user to enter a positive number
+        confirmDialog -title "Invalid Speed" -message "Please enter a positive number for animation speed." -button "OK";
+        return;
+    }
+    
+    // Set the playback by value
+    playbackOptions -by $speed;
+    
+    // Start playing the animation forward
+    playButtonForward;
+}
+
+
+global proc createPivotPointsWindow() {
+    if (`window -exists pivotPointsWindow`) {
+        deleteUI pivotPointsWindow;
+    }
+
+    window -title "Pivot Points" -sizeable true -bgc 1 1 1 pivotPointsWindow;
+    columnLayout -adjustableColumn true;
+
+    text -label "Pivot points adjustment" -font "boldLabelFont" -height 40;
+    if(!`objExists tailLocator0`){
+      placeLocators();
+    }
+    text -label "Step 1: Click on Maximize / Minimize pivot points to change their size according to your model (optional)" -align "left" -height 40;
+    button -label "Maximize / Minimize pivot points" -command "if (!`objExists mainLocatorGroup`) { scaleLocators(); }" -bgc 0.8 0.8 0.8;
+    text -label "Step 2: Click on Adjust pivot points locations to change their locations according to your model" -align "left" -height 40;
+    button -label "Adjust pivot points locations" -command "if (`objExists mainLocatorGroup`) {ungroupAndUnparent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator, $leftBackLegLocators, $leftFrontLegLocators);} else {confirmDialog -title \"Adjustment Reminder\" -message \"You can now adjust the pivot points' locations but make sure to:\\n1. View the model from the right side for only adjusting the right legs.\\n2. Ensure pivot points are inside the mesh by checking from the front and back views too.\\n3. Avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area.\" -button \"Ok\" -defaultButton \"Got it\" -icon \"information\";}" -bgc 0.8 0.8 0.8;
+    text -label "Step 3: Click on Confirm after finishing with your adjustments" -align "left" -height 40;
+    button -label "Confirm" -command "if (`objExists mainLocatorGroup`) {deleteUI pivotPointsWindow;} else {groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); deleteUI pivotPointsWindow;}" -bgc 0.8 0.8 0.8;
+
+    showWindow pivotPointsWindow;
+}
+
+global proc createQuadrupedAutorigWindow() {
+    if (`window -exists quadrupedAutorig`) {
+        deleteUI quadrupedAutorig;
+    }
+
+    window -title "Quadruped Autorig" -sizeable true -bgc 1 1 1 quadrupedAutorig;
+    columnLayout -adjustableColumn true;
+
+    text -label "Welcome to Quadruped Autorig!" -align "center" -font "boldLabelFont" -height 50;
+
+    text -label "Important: Please select your geometry from the outliner and rename it Mesh" -align "left" -font "boldLabelFont";
+    text -label "" -height 10; 
+
+    text -label "Step 1: Click on Place pivot points to adjust the places of the joints with the rigger before starting to rig" -align "left";
+    text -label "" -height 2;
+    button -label "Place pivot points" -command "createPivotPointsWindow()" -bgc 0.8 0.8 0.8 -width 200 -ann 10;
+    text -label "" -height 10; 
+
+    text -label "Step 2: Click on Finalize rigging to get the full rigging of your animal model" -align "left";
+    text -label "" -height 2;
+    button -label "Finalize rigging" -command "if (`objExists mainLocatorGroup`) { quadRig($headToBack, $straightBackSpine, $tailLocators, $leftFrontLegLocators, $leftBackLegLocators, $secondAbdomenLocator, $firstAbdomenLocator, $ChestLocatorHalfWay, $ChestLocator, $headToMouthHalfWay, $headToMouth, $eyeLocator); deleteUI quadrupedAutorig;} " -bgc 0.8 0.8 0.8;
+
+    showWindow quadrupedAutorig;
+}
+
+global proc createAnimationWindow() {
+    string $toolCreate = "createTool";
+    string $toolName = "UI Tool";
+    if (`window -exists $toolCreate`) {
+        deleteUI $toolCreate;
+    }
+    createWalkCycle();
+    window -t $toolName -w 500 -h 500 $toolCreate;
+    gridLayout -nc 3 -cwh 90 50;
+    text -label "Enter Speed (m/s):";
+    textField -editable true -tx "1" -w 100 speedTextField;
+    button -label "Play / Pause" -c "animationPlaySpeed()";
+    setParent ..;
+    showWindow $toolCreate;
+}
+
+createQuadrupedAutorigWindow();
+createAnimationWindow();
