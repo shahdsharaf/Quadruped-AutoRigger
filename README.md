@@ -1,4 +1,4 @@
-Quadruped Autorigging Tool:
+Quadruped Autorigging Tool:<br>
 1-We have to first import our quadruped model (cat, dog, lion, tiger, or horse).
 2-Rename the our model in the outliner "Mesh".
 3-We can then start running our code a GUI window will open called "Quadruped Autorigger" that has two buttons.
