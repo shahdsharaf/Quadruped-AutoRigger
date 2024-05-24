@@ -1,3 +1,6 @@
+
+global string $selectedModelType;
+
 global proc string[] createLocators(string $locatorName, int $numLocators, float $initPosX, float $initPosY, float $initPosZ, float $offsetX, float $offsetY, float $offsetZ) {
   string $locators[];
   
@@ -19,6 +22,105 @@ global proc string[] createLocators(string $locatorName, int $numLocators, float
   
   return $locators;
 }
+
+// Function to check distances between consecutive locators in an array
+proc int checkLocators(string $locators[], float $threshold) {
+  for ($i = 0; $i < (size($locators) - 1); ++$i) {
+    vector $pos1 = `xform -q -ws -t $locators[$i]`;
+    vector $pos2 = `xform -q -ws -t $locators[$i + 1]`;
+
+    float $distance = mag($pos1 - $pos2);
+
+    if ($distance > $threshold) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+global proc int isAnyLocatorOutOfBounds(string $modelType) {
+    
+    float $threshold;
+    if ($modelType == "Cat") {
+        $threshold = 20.0;
+    } else if ($modelType == "Dog") {
+        $threshold = 25.0;
+    } else if ($modelType == "LionTiger") {
+        $threshold = 30.0;
+    } else if ($modelType == "Horse") {
+        $threshold = 60.0;
+    } else {
+        $threshold = 20.0;
+    }
+  // Arrays of locator names grouped by their naming conventions
+  string $headToBackLocators[] = {
+    "headToBack0",
+    "headToBack1",
+    "headToBack2"
+  };
+  string $straightBackSpineLocators[] = {
+    "straightBackSpine0",
+    "straightBackSpine1",
+    "straightBackSpine2",
+    "straightBackSpine3",
+    "straightBackSpine4",
+    "straightBackSpine5"
+  };
+  string $tailLocators[] = {
+    "tailLocator0",
+    "tailLocator1",
+    "tailLocator2",
+    "tailLocator3",
+    "tailLocator4",
+    "tailLocator5",
+    "tailLocator6"
+  };
+  string $leftBackLocators[] = {
+    "leftBackHipStart0",
+    "leftBackHipEnd0",
+    "leftBackKnee0",
+    "leftBackAnkle0",
+    "leftBackPawStart0",
+    "leftBackToes0"
+  };
+  string $leftFrontLocators[] = {
+    "leftFrontShoulder0",
+    "leftFrontElbow0",
+    "leftFrontAnkle0",
+    "leftFrontPawStart0",
+    "leftFrontToes0"
+  };
+  string $abdomenLocators[] = {
+    "firstAbdomenLocator0",
+    "secondAbdomenLocator0"
+  };
+  string $chestLocators[] = {
+    "ChestLocatorHalfWay0",
+    "ChestLocator0"
+  };
+  string $headToMouthLocators[] = {
+    "headToMouthHalfWay0",
+    "headToMouth0"
+  };
+  string $eyeLocator[] = {
+    "eyeLocator0"
+  };
+
+
+  // Check each array of locators
+  if (checkLocators($headToBackLocators, $threshold)) return 1;
+  if (checkLocators($straightBackSpineLocators, $threshold)) return 1;
+  if (checkLocators($tailLocators, $threshold)) return 1;
+  if (checkLocators($leftBackLocators, $threshold)) return 1;
+  if (checkLocators($leftFrontLocators, $threshold)) return 1;
+  if (checkLocators($abdomenLocators, $threshold)) return 1;
+  if (checkLocators($chestLocators, $threshold)) return 1;
+  if (checkLocators($headToMouthLocators, $threshold)) return 1;
+  if (checkLocators($eyeLocator, $threshold)) return 1;
+
+  return 0;
+}
+
 
 global proc placeLocators() {
     
@@ -199,6 +301,7 @@ global proc quadRig(string $headToBack[], string $straightBackSpine[], string $t
     createIKHandles();
     createAnkleControllers();
     createPawControllers();
+    string $controllers[] = {"rightBackAnkleCont", "leftBackAnkleCont", "rightBackPawRotation", "leftBackPawRotation", "leftFrontPawCont", "rightFrontPawCont"};
     assignMaterialToControllers("controllersMaterial", $controllers, 0.8);
     createSplineIK("straightBackSpineJoint5", "straightBackSpineJoint0", "spineIKSpline", "spineCurve");
    
@@ -655,10 +758,10 @@ global proc assignMaterialToControllers(string $materialName, string $controller
     }
 }
 
-global proc createWalkCycle() {
+global proc createWalkCycle(string $modelType) {
     playbackOptions -min 0 -max 200;
     currentTime 0;
-    string $objects[] = {"Mesh", "tailLocatorJoint0", "rightBackAnkleCont", "leftBackAnkleCont", "rightFrontPawCont", "leftFrontPawCont", "spineCurve", "straightBackSpineJoint0", "straightBackSpineJoint4", "straightBackSpineJoint5"};
+    string $objects[] = {"Mesh", "tailLocatorJoint0", "rightBackAnkleCont", "leftBackAnkleCont", "rightFrontPawCont", "leftFrontPawCont", "spineCurve", "straightBackSpineJoint0", "straightBackSpineJoint4", "straightBackSpineJoint5", "straightBackSpineJoint1", "straightBackSpineJoint2"};
     
     //first keyframe
     for ($obj in $objects) {
@@ -667,6 +770,8 @@ global proc createWalkCycle() {
     
     //second keyframe
     currentTime 34;
+    
+    if ($modelType == "Cat" || $modelType == "Dog") {
     select -r leftFrontPawCont;
     move -r 0 0.83439 5.423538;
     rotate -r -ws -fo 17.322033 0 0;
@@ -676,14 +781,28 @@ global proc createWalkCycle() {
 
     select -r rightBackAnkleCont;
     move -r 0 0 1.52895;
-
+    
     select -r spineCurve;
     move -r 0 0.106475 1.17122;
+    }
+    
+    if($modelType == "Horse" || $modelType == "LionTiger"){
+        select -r leftFrontPawCont ;
+        move -r 0 2.826322 25.436896 ;
+        rotate -r -ws -fo 4.501484 0 0 ;
+        select -r leftBackAnkleCont ;
+        move -r 0 0 18.852781 ;
+        select -r spineCurve ;
+        move -r 0 1.661712 6.092945 ;
+        
+    }
+    
     select -r $objects;
     setKeyframe -t 34 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
 
     // third keyframe
     currentTime 67;
+    if ($modelType == "Cat" || $modelType == "Dog") {
     select -r leftFrontPawCont;
     move -r 0 1.051255 3.942208;
     rotate -r -ws -fo -5.29893 0 0;
@@ -696,17 +815,48 @@ global proc createWalkCycle() {
 
     select -r rightBackAnkleCont;
     move -r 0 0.42926 1.502411;
-
     select -r spineCurve;
     move -r 0 0 1.092612;
+    move -r 0 0.33358 0 ;
 
     select -r straightBackSpineJoint4;
-    move -r 0 0 0.471129;
+    move -r 0 0 1.04;
+
+    select -r straightBackSpineJoint5 ;
+    move -r 0 0 0.388401 ;
+    move -r 0 -0.427344 0.712239 ;
+    }
+    
+    if ($modelType == "Horse" || $modelType =="LionTiger") {
+    select -r leftFrontPawCont;
+    move -r 0 0.942107 11.305287 ;
+    select -r leftBackAnkleCont ;
+    move -r 0 -0.942639 42.418758 ;
+    select -r spineCurve;
+    move -r 0 0 1.092612;
+    move -r 0 0.33358 0 ;
+
+    select -r straightBackSpineJoint4;
+    move -r 0 0 1.04;
+
+    select -r straightBackSpineJoint5 ;
+    move -r 0 0 0.388401 ;
+    move -r 0 -0.427344 0.712239 ;
+    select -r straightBackSpineJoint2 ;
+    move -r 0 0 1.661712 ;
+    select -r straightBackSpineJoint1 ;
+    move -r 0 -2.215616 2.769521 ;
+    select -r tailLocatorJoint0 ;
+    move -r 0 2.215616 1.107808 ;
+    }
+
+    
     select -r $objects;
     setKeyframe -t 67 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
 
     // fourth keyframe
     currentTime 100;
+    if ($modelType == "Cat" || $modelType == "Dog") {
     select -r leftFrontPawCont;
     move -r 0 -0.860254 0.245787;
     rotate -r -ws -fo -12.485581 0 0;
@@ -720,25 +870,42 @@ global proc createWalkCycle() {
 
     select -r rightBackAnkleCont;
     move -r 0 0.445734 0.594312;
+    }
     
-    select -r straightBackSpineJoint5 ;
-    move -r 0 0 0.388401 ;
-    select -r straightBackSpineJoint4 ;
-    move -r 0 0 0.873903 ;
+    if ($modelType == "Horse" || $modelType == "LionTiger") {
+        select -r rightFrontPawCont ;
+        move -r 0 6.528512 16.787603 ;
+        rotate -r -ws -fo 10.692371 0 0 ;
+
+        select -r leftFrontPawCont ;
+        rotate -r -ws -fo -4.501484 0 0 ;
+        select -r rightBackAnkleCont ;
+        move -r 0 -3.693272 17.543042 ;
+
+
+    }
 
     select -r $objects;
-
     setKeyframe -t 100 -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;
 
     // fifth keyframe
     currentTime 134;
+    if ($modelType == "Cat" || $modelType =="Dog") {
     select -r rightFrontPawCont;
     move -r 0 -0.182263 4.374321;
 
     select -r rightBackAnkleCont;
     move -r 0 0 1.826428;
     move -r 0 1.055434 2.398714 ;
+    }
+    if ($modelType == "Horse" || $modelType =="LionTiger") {
 
+   select -r rightBackAnkleCont ;
+   move -r 0 2.644709 11.240013 ;
+   select -r spineCurve;
+   move -r 0 0 12.422292 ;
+
+   } 
     select -r spineCurve;
     move -r 0 0 0.686567;
 
@@ -747,7 +914,7 @@ global proc createWalkCycle() {
 
     // sixth keyframe
     currentTime 167;
-
+    if ($modelType == "Cat" || $modelType =="Dog") {
     select -r rightFrontPawCont;
     move -r 0 -2.408556 3.318456;
     rotate -r -ws -fo -20.139853 0 0;
@@ -755,14 +922,35 @@ global proc createWalkCycle() {
     select -r rightBackAnkleCont;
     move -r 0 -1.528843 5.198065;
     move -r 0 -0.702429 0 ;
+    }
+    if ($modelType == "Horse" || $modelType == "LionTiger") {
+        select -r rightFrontPawCont ;
+        move -r 0 -5.246847 3.747748 ;
+        rotate -r -ws -fo -10.692371 0 0 ;
+        select -r rightBackAnkleCont ;
+        move -r 0 -9.220157 11.854488 ;
+        move -r 0 3.586377 18.257919 ;
+    }
 
     select -r spineCurve;
     move -r 0 0 5.507621;
+    move -r 0 -0.33358 0 ;
+    
+    select -r straightBackSpineJoint4;
+    move -r 0 0 -1.04;
     
     select -r straightBackSpineJoint5 ;
     move -r 0 0 -0.388401 ;
-    select -r straightBackSpineJoint4 ;
-    move -r 0 0 -0.873903 ;
+    move -r 0 0.427344 -0.712239 ;
+    
+    select -r straightBackSpineJoint2 ;
+    move -r 0 0.124154 -0.372462 ;
+    
+    select -r straightBackSpineJoint1 ;
+    move -r 0 0 -0.496617 ;
+
+    select -r tailLocatorJoint0 ;
+    move -r 0 -0.248308 -0.124154 ;
 
     select -r $objects;
 
@@ -790,6 +978,21 @@ global proc animationPlaySpeed()
     playButtonForward;
 }
 
+global proc showAdjustmentErrorDialog() {
+    confirmDialog -title "Adjustment Error"
+                  -message "A pivot point location was out of bounds.\n-Please try adjusting points again and avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area and do not switch it with neither a neighbor point nor any other point on the body.\n-Please ensure pivot points are inside the mesh by checking from the front and back views too."
+                  -button "Ok"
+                  -defaultButton "Got it"
+                  -icon "information";
+}
+
+proc int isAnimatedAtKeyframe(string $objectName, float $keyframeTime) {
+    // Query keyframes on the object
+    int $keyExists = `keyframe -time $keyframeTime -query -keyframeCount $objectName`;
+    
+    // Return the result (1 if keyframes exist, 0 if not)
+    return $keyExists;
+}
 
 global proc createPivotPointsWindow() {
     if (`window -exists pivotPointsWindow`) {
@@ -808,7 +1011,7 @@ global proc createPivotPointsWindow() {
     text -label "Step 2: Click on Adjust pivot points locations to change their locations according to your model" -align "left" -height 40;
     button -label "Adjust pivot points locations" -command "if (`objExists mainLocatorGroup`) {ungroupAndUnparent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator, $leftBackLegLocators, $leftFrontLegLocators);} else {confirmDialog -title \"Adjustment Reminder\" -message \"You can now adjust the pivot points' locations but make sure to:\\n1. View the model from the right side for only adjusting the right legs.\\n2. Ensure pivot points are inside the mesh by checking from the front and back views too.\\n3. Avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area.\" -button \"Ok\" -defaultButton \"Got it\" -icon \"information\";}" -bgc 0.8 0.8 0.8;
     text -label "Step 3: Click on Confirm after finishing with your adjustments" -align "left" -height 40;
-    button -label "Confirm" -command "if (`objExists mainLocatorGroup`) {deleteUI pivotPointsWindow;} else {groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); deleteUI pivotPointsWindow;}" -bgc 0.8 0.8 0.8;
+    button -label "Confirm" -command "if (isAnyLocatorOutOfBounds($selectedModelType)) { showAdjustmentErrorDialog(); groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); delete mainLocatorGroup; placeLocators(); } else { if (`objExists mainLocatorGroup`) { deleteUI pivotPointsWindow; } else { groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); deleteUI pivotPointsWindow; } }" -bgc 0.8 0.8 0.8;
 
     showWindow pivotPointsWindow;
 }
@@ -826,25 +1029,45 @@ global proc createQuadrupedAutorigWindow() {
     text -label "Important: Please select your geometry from the outliner and rename it Mesh" -align "left" -font "boldLabelFont";
     text -label "" -height 10; 
 
-    text -label "Step 1: Click on Place pivot points to adjust the places of the joints with the rigger before starting to rig" -align "left";
+   // Add the dropdown menu
+    text -label "Step 1: Choose the type of your model from the list below and then click on OK" -align "left";
+    text -label "" -height 2;
+    text -label "N.B. If your model is not listed, choose the name of the model that is closest in size with your model" -align "left" -font "boldLabelFont";
+    text -label "" -height 2;
+
+    optionMenu -label "Choose the type of the model" -bgc 0.9 0.9 0.9 myDropdownMenu;
+    text -label "" -height 5;
+    menuItem -label "Cat";
+    menuItem -label "Dog";
+    menuItem -label "Lion / Tiger";
+    menuItem -label "Horse";
+
+    text -label "" -height 2;
+    button -label "OK" -command "global string $selectedModelType; $selectedModelType = `optionMenu -query -value myDropdownMenu`; print(\"Selected item: \" + $selectedModelType + \"\\n\");" -bgc 0.8 0.8 0.8;
+    text -label "" -height 10;
+
+    text -label "Step 2: Click on Place pivot points to adjust the places of the joints with the rigger before starting to rig" -align "left";
     text -label "" -height 2;
     button -label "Place pivot points" -command "createPivotPointsWindow()" -bgc 0.8 0.8 0.8 -width 200 -ann 10;
     text -label "" -height 10; 
 
-    text -label "Step 2: Click on Finalize rigging to get the full rigging of your animal model" -align "left";
+    text -label "Step 3: Click on Finalize rigging to get the full rigging of your animal model" -align "left";
     text -label "" -height 2;
     button -label "Finalize rigging" -command "if (`objExists mainLocatorGroup`) { quadRig($headToBack, $straightBackSpine, $tailLocators, $leftFrontLegLocators, $leftBackLegLocators, $secondAbdomenLocator, $firstAbdomenLocator, $ChestLocatorHalfWay, $ChestLocator, $headToMouthHalfWay, $headToMouth, $eyeLocator); deleteUI quadrupedAutorig;} " -bgc 0.8 0.8 0.8;
 
     showWindow quadrupedAutorig;
 }
 
-global proc createAnimationWindow() {
+global proc createAnimationWindow(string $selectedModelType) {
     string $toolCreate = "createTool";
     string $toolName = "UI Tool";
     if (`window -exists $toolCreate`) {
         deleteUI $toolCreate;
     }
-    createWalkCycle();
+    if(!isAnimatedAtKeyframe("Mesh", 0.0)){
+      createWalkCycle($selectedModelType);
+
+    }
     window -t $toolName -w 500 -h 500 $toolCreate;
     gridLayout -nc 3 -cwh 90 50;
     text -label "Enter Speed (m/s):";
@@ -855,4 +1078,4 @@ global proc createAnimationWindow() {
 }
 
 createQuadrupedAutorigWindow();
-createAnimationWindow();
+createAnimationWindow($selectedModelType);
