@@ -832,22 +832,16 @@ global proc createWalkCycle(string $modelType) {
     move -r 0 0.942107 11.305287 ;
     select -r leftBackAnkleCont ;
     move -r 0 -0.942639 42.418758 ;
-    select -r spineCurve;
-    move -r 0 0 1.092612;
-    move -r 0 0.33358 0 ;
-
+    
+    select -r spineCurve ;
+    move -r 0 0.33358 14.258818 ;
     select -r straightBackSpineJoint4;
     move -r 0 0 1.04;
 
     select -r straightBackSpineJoint5 ;
     move -r 0 0 0.388401 ;
     move -r 0 -0.427344 0.712239 ;
-    select -r straightBackSpineJoint2 ;
-    move -r 0 0 1.661712 ;
-    select -r straightBackSpineJoint1 ;
-    move -r 0 -2.215616 2.769521 ;
-    select -r tailLocatorJoint0 ;
-    move -r 0 2.215616 1.107808 ;
+   
     }
 
     
@@ -870,6 +864,10 @@ global proc createWalkCycle(string $modelType) {
 
     select -r rightBackAnkleCont;
     move -r 0 0.445734 0.594312;
+    
+    select -r spineCurve ;
+    move -r 0 0 0.689289 ;
+
     }
     
     if ($modelType == "Horse" || $modelType == "LionTiger") {
@@ -904,6 +902,11 @@ global proc createWalkCycle(string $modelType) {
    move -r 0 2.644709 11.240013 ;
    select -r spineCurve;
    move -r 0 0 12.422292 ;
+   select -r leftBackAnkleCont ;
+   move -r 0 -5.077401 -1.904025 ;
+   select -r leftFrontPawCont ;
+   move -r 0 -1.269302 6.981161 ;
+
 
    } 
     select -r spineCurve;
@@ -925,7 +928,7 @@ global proc createWalkCycle(string $modelType) {
     }
     if ($modelType == "Horse" || $modelType == "LionTiger") {
         select -r rightFrontPawCont ;
-        move -r 0 -5.246847 3.747748 ;
+        move -r 0 -5.246847 24.0 ;
         rotate -r -ws -fo -10.692371 0 0 ;
         select -r rightBackAnkleCont ;
         move -r 0 -9.220157 11.854488 ;
@@ -1060,7 +1063,7 @@ global proc createQuadrupedAutorigWindow() {
 
 global proc createAnimationWindow(string $selectedModelType) {
     string $toolCreate = "createTool";
-    string $toolName = "UI Tool";
+    string $toolName = "Walk cycle";
     if (`window -exists $toolCreate`) {
         deleteUI $toolCreate;
     }
@@ -1070,7 +1073,7 @@ global proc createAnimationWindow(string $selectedModelType) {
     }
     window -t $toolName -w 500 -h 500 $toolCreate;
     gridLayout -nc 3 -cwh 90 50;
-    text -label "Enter Speed (m/s):";
+    text -label "Enter Speed (m/s):" -align "left";
     textField -editable true -tx "1" -w 100 speedTextField;
     button -label "Play / Pause" -c "animationPlaySpeed()";
     setParent ..;
