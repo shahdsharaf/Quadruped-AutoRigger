@@ -1006,7 +1006,7 @@ global proc createPivotPointsWindow() {
     columnLayout -adjustableColumn true;
 
     text -label "Pivot points adjustment" -font "boldLabelFont" -height 40;
-    if(!`objExists tailLocator0`){
+    if(!`objExists tailLocator0` && !`objExists straightBackSpineJoint0`){
       placeLocators();
     }
     text -label "Step 1: Click on Maximize / Minimize pivot points to change their size according to your model (optional)" -align "left" -height 40;
@@ -1014,9 +1014,37 @@ global proc createPivotPointsWindow() {
     text -label "Step 2: Click on Adjust pivot points locations to change their locations according to your model" -align "left" -height 40;
     button -label "Adjust pivot points locations" -command "if (`objExists mainLocatorGroup`) {ungroupAndUnparent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator, $leftBackLegLocators, $leftFrontLegLocators);} else {confirmDialog -title \"Adjustment Reminder\" -message \"You can now adjust the pivot points' locations but make sure to:\\n1. View the model from the right side for only adjusting the right legs.\\n2. Ensure pivot points are inside the mesh by checking from the front and back views too.\\n3. Avoid switching points or moving them between different parts of the model. For example, if a point is on the tail, only adjust its location within the tail area.\" -button \"Ok\" -defaultButton \"Got it\" -icon \"information\";}" -bgc 0.8 0.8 0.8;
     text -label "Step 3: Click on Confirm after finishing with your adjustments" -align "left" -height 40;
-    button -label "Confirm" -command "if (isAnyLocatorOutOfBounds($selectedModelType)) { showAdjustmentErrorDialog(); groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); delete mainLocatorGroup; placeLocators(); } else { if (`objExists mainLocatorGroup`) { deleteUI pivotPointsWindow; } else { groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); deleteUI pivotPointsWindow; } }" -bgc 0.8 0.8 0.8;
+    button -label "Confirm" -command "if (isAnyLocatorOutOfBounds($selectedModelType)) { showAdjustmentErrorDialog(); groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); delete mainLocatorGroup; placeLocators(); } else { if (`objExists mainLocatorGroup`) { deleteUI pivotPointsWindow; select -cl;} else { groupAndParent($tailLocators, $straightBackSpine, $headToBack, $leftFrontShoulder, $leftFrontElbow, $leftFrontAnkle, $leftFrontPawStart, $leftFrontToes, $leftBackHipStart, $leftBackHipEnd, $leftBackKnee, $leftBackAnkle, $leftBackPawStart, $leftBackToes, $firstAbdomenLocator, $secondAbdomenLocator, $eyeLocator, $headToMouthHalfWay, $headToMouth, $ChestLocatorHalfWay, $ChestLocator); deleteUI pivotPointsWindow; select -cl;} }" -bgc 0.8 0.8 0.8;
 
     showWindow pivotPointsWindow;
+}
+global proc showDropdownDialog() {
+    if (`window -exists customDialog`) {
+        deleteUI customDialog;
+    }
+
+    window -title "Choose Model Type" -sizeable false -resizeToFitChildren true customDialog;
+    columnLayout -adjustableColumn true;
+
+    text -label "Choose the type of your model from the list below and then click on OK." -align "left";
+    text -label "" -height 2;
+    text -label "N.B. If your model is not listed, choose the name of the model that is closest in size with your model." -align "left" -font "boldLabelFont";
+    text -label "" -height 10;
+
+    optionMenuGrp -label "Choose the type of the model" -bgc 0.9 0.9 0.9 -columnWidth2 200 100 modelTypeMenu;
+    menuItem -label "Cat";
+    menuItem -label "Dog";
+    menuItem -label "Lion / Tiger";
+    menuItem -label "Horse";
+
+    text -label "" -height 10;
+
+    rowLayout -numberOfColumns 2 -columnWidth2 100 100 -columnAttach2 "both" "both" -columnAlign2 "center" "center";
+    button -label "OK" -command "global string $selectedModelType; $selectedModelType = `optionMenuGrp -query -value modelTypeMenu`; print(\"Selected item: \" + $selectedModelType + \"\\n\"); deleteUI customDialog; createQuadrupedAutorigWindow();" -bgc 0.6 0.6 0.6;
+    button -label "Cancel" -command "deleteUI customDialog;" -bgc 0.6 0.6 0.6;
+    setParent ..;
+
+    showWindow customDialog;
 }
 
 global proc createQuadrupedAutorigWindow() {
@@ -1030,31 +1058,14 @@ global proc createQuadrupedAutorigWindow() {
     text -label "Welcome to Quadruped Autorig!" -align "center" -font "boldLabelFont" -height 50;
 
     text -label "Important: Please select your geometry from the outliner and rename it Mesh" -align "left" -font "boldLabelFont";
-    text -label "" -height 10; 
-
-   // Add the dropdown menu
-    text -label "Step 1: Choose the type of your model from the list below and then click on OK" -align "left";
-    text -label "" -height 2;
-    text -label "N.B. If your model is not listed, choose the name of the model that is closest in size with your model" -align "left" -font "boldLabelFont";
-    text -label "" -height 2;
-
-    optionMenu -label "Choose the type of the model" -bgc 0.9 0.9 0.9 myDropdownMenu;
-    text -label "" -height 5;
-    menuItem -label "Cat";
-    menuItem -label "Dog";
-    menuItem -label "Lion / Tiger";
-    menuItem -label "Horse";
-
-    text -label "" -height 2;
-    button -label "OK" -command "global string $selectedModelType; $selectedModelType = `optionMenu -query -value myDropdownMenu`; print(\"Selected item: \" + $selectedModelType + \"\\n\");" -bgc 0.8 0.8 0.8;
     text -label "" -height 10;
 
-    text -label "Step 2: Click on Place pivot points to adjust the places of the joints with the rigger before starting to rig" -align "left";
+    text -label "Step 1: Click on Place pivot points to adjust the places of the joints with the rigger before starting to rig" -align "left";
     text -label "" -height 2;
-    button -label "Place pivot points" -command "createPivotPointsWindow()" -bgc 0.8 0.8 0.8 -width 200 -ann 10;
-    text -label "" -height 10; 
+    button -label "Place pivot points" -command "if(!`objExists tailLocator0` && !`objExists straightBackSpineJoint0`) { createPivotPointsWindow();}" -bgc 0.8 0.8 0.8 -width 200 -ann 10;
+    text -label "" -height 10;
 
-    text -label "Step 3: Click on Finalize rigging to get the full rigging of your animal model" -align "left";
+    text -label "Step 2: Click on Finalize rigging to get the full rigging of your animal model" -align "left";
     text -label "" -height 2;
     button -label "Finalize rigging" -command "if (`objExists mainLocatorGroup`) { quadRig($headToBack, $straightBackSpine, $tailLocators, $leftFrontLegLocators, $leftBackLegLocators, $secondAbdomenLocator, $firstAbdomenLocator, $ChestLocatorHalfWay, $ChestLocator, $headToMouthHalfWay, $headToMouth, $eyeLocator); deleteUI quadrupedAutorig;} " -bgc 0.8 0.8 0.8;
 
@@ -1080,5 +1091,7 @@ global proc createAnimationWindow(string $selectedModelType) {
     showWindow $toolCreate;
 }
 
-createQuadrupedAutorigWindow();
+showDropdownDialog();
 createAnimationWindow($selectedModelType);
+
+
