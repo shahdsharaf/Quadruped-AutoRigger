@@ -3,7 +3,7 @@ Quadruped Autorigging Tool:
 1. We have to first import our quadruped model (cat, dog, lion, tiger, or horse). <br>
 2. Rename our model in the outliner to "Mesh". <br>
 3. We can start running our code. An alert will show and ask us to choose the model type from the dropdown then press the OK button.<br>
-5. A window called "Quadruped Autorigger" will open and we should click on the first button called "Place pivot points" so that we can start adjusting the points that are located at the areas we should have joints at. However, if the points' size does not match the model's size, check number six.<br>
+5. A window called "Quadruped Autorigger" will open and we should click on the first button called "Place pivot points" so that we can start adjusting the points that are located at the areas we should have joints at. However, if the points' size does not match the model's size, check number five.<br>
 6. Another window opens called "Pivot point adjustment" that includes three buttons:<br>
     - **Maximize / Minimize pivot points**: This button helps us scale all the points in order to match the model's size.<br>
     - **Adjust pivot points locations**: If we would like to adjust a specific point again after scaling all the points up or down, choose this button.<br>
